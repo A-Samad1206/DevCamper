@@ -35,7 +35,10 @@ const advancedResults = (model, populate) => async (req, res, next) => {
   } else {
     query = query.sort('-createdAt');
   }
-
+  // Populate fields
+  if (populate) {
+    query = query.populate(populate);
+  }
   const results = await query;
   const totalCount = results.length;
   let temp = [];
@@ -52,7 +55,7 @@ const advancedResults = (model, populate) => async (req, res, next) => {
       return res.status(404).json({ data: null, msg: 'No records...' });
 
     let startIndex = (page - 1) * limit;
-    temp = bootcamps.slice(startIndex, startIndex + limit);
+    temp = results.slice(startIndex, startIndex + limit);
 
     pagination = {};
     pagination = {
@@ -65,7 +68,7 @@ const advancedResults = (model, populate) => async (req, res, next) => {
   let response = {
     totalCount,
     success: true,
-    data: temp.length ? temp : bootcamps,
+    data: temp.length ? temp : results,
   };
   if (pagination) response.pagination = pagination;
 

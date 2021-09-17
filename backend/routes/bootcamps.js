@@ -6,9 +6,9 @@ const {
   updateBootcamp,
   deleteBootcamp,
   getBootcampsInRadius,
-  bootcampPhotoUpload
+  bootcampPhotoUpload,
 } = require('../controllers/bootcamps');
-
+const responseTime = require('../middleware/responseTime');
 const Bootcamp = require('../models/Bootcamp');
 
 // Include other resource routers
@@ -16,6 +16,8 @@ const courseRouter = require('./courses');
 const reviewRouter = require('./reviews');
 
 const router = express.Router();
+
+// router.use(responseTime());
 
 const advancedResults = require('../middleware/advancedResults');
 const { protect, authorize } = require('../middleware/auth');

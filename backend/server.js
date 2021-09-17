@@ -11,11 +11,13 @@ const xss = require('xss-clean');
 const rateLimit = require('express-rate-limit');
 const hpp = require('hpp');
 const cors = require('cors');
+const compression = require('compression');
+const cache = require('./middleware/cache');
 const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
-
+const shouldCompress = require('./utils/shouldCompress');
 // Load env vars
-dotenv.config({ path: './config/config.env' });
+dotenv.config({ path: './config/.env' });
 
 // Connect to database
 connectDB();
@@ -28,6 +30,9 @@ const users = require('./routes/users');
 const reviews = require('./routes/reviews');
 
 const app = express();
+
+// Compress all responses
+app.use(compression({ filter: shouldCompress }));
 
 // Body parser
 app.use(express.json());
@@ -55,7 +60,7 @@ app.use(xss());
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 mins
-  max: 100
+  max: 100,
 });
 app.use(limiter);
 
@@ -67,7 +72,8 @@ app.use(cors());
 
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public')));
-
+// Do caching...
+app.use(cache(300));
 // Mount routers
 app.use('/api/v1/bootcamps', bootcamps);
 app.use('/api/v1/courses', courses);
@@ -82,7 +88,8 @@ const PORT = process.env.PORT || 5000;
 const server = app.listen(
   PORT,
   console.log(
-    `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold
+    `Server running in ${process.env.NODE_ENV} mode on  http://localhost:${PORT}`
+      .yellow.bold
   )
 );
 

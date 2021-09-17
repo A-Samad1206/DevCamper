@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "compression": "^1.7.4",
+    "node-cache": "^5.1.2"
+  }
+}
